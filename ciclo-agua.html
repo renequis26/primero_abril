@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Laboratorio interactivo del ciclo del agua para estudiantes de Primero de Abril.">
+  <title>Laboratorio del agua | Primero de Abril</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --navy: #092f63; --blue: #1768b3; --sky: #bcecf5; --cyan: #51cddd; --yellow: #ffd24c; --ink: #132942; --muted: #65788f; --paper: #f5f9fc; --white: #fff; --green: #36b47d; --red: #e76e68; }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; color: var(--ink); background: var(--paper); font-family: 'DM Sans', sans-serif; line-height: 1.5; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; cursor: pointer; }
+    .container { width: min(1120px, calc(100% - 40px)); margin: 0 auto; }
+    .lab-header { color: var(--white); background: var(--navy); }
+    .header-inner { display: flex; align-items: center; justify-content: space-between; min-height: 76px; gap: 22px; }
+    .brand { display: inline-flex; align-items: center; gap: 10px; }
+    .brand-mark { display: grid; width: 36px; height: 36px; place-items: center; color: var(--navy); background: var(--yellow); border-radius: 50%; font: 700 20px/1 'Space Grotesk', sans-serif; }
+    .brand-mark small { font-size: 10px; align-self: end; margin: 0 0 6px -2px; }
+    .brand strong, .brand span:last-child { display: block; }
+    .brand strong { font: 700 15px/1.05 'Space Grotesk', sans-serif; }
+    .brand span:last-child { color: rgba(255,255,255,.65); font-size: 10px; letter-spacing: .5px; }
+    .back-link { color: var(--yellow); font-size: 12px; font-weight: 700; }
+    .back-link span { margin-right: 7px; font-size: 18px; }
+    .lab-hero { position: relative; overflow: hidden; padding: 58px 0 72px; color: var(--white); background: linear-gradient(145deg, #0a3972 0%, #115795 60%, #4dc6d8 130%); }
+    .lab-hero::after { position: absolute; right: -90px; bottom: -160px; width: 340px; height: 340px; border: 45px solid rgba(255,255,255,.08); border-radius: 50%; content: ''; }
+    .hero-content { position: relative; z-index: 1; max-width: 700px; }
+    .eyebrow { display: flex; align-items: center; gap: 10px; margin: 0 0 18px; color: var(--yellow); font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
+    .eyebrow::before { width: 25px; height: 3px; background: var(--yellow); content: ''; }
+    h1, h2, h3 { font-family: 'Space Grotesk', sans-serif; letter-spacing: -1px; }
+    h1 { max-width: 760px; margin: 0 0 18px; font-size: clamp(42px, 8vw, 72px); line-height: .98; }
+    h1 em { color: var(--yellow); font-style: normal; }
+    .hero-content > p:not(.eyebrow) { max-width: 620px; margin: 0; color: rgba(255,255,255,.8); font-size: 17px; }
+    main { padding: 44px 0 80px; }
+    .simulation-layout { display: grid; gap: 20px; align-items: start; }
+    .panel { background: var(--white); border: 1px solid #dfeaf2; border-radius: 10px; box-shadow: 0 12px 35px rgba(9,47,99,.07); }
+    .simulation-panel { overflow: hidden; }
+    .panel-heading { display: flex; align-items: start; justify-content: space-between; gap: 15px; padding: 23px 25px; border-bottom: 1px solid #e8f0f5; }
+    .panel-heading h2 { margin: 0; font-size: 22px; }
+    .panel-heading p { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
+    .sim-status { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; color: var(--green); font-size: 11px; font-weight: 700; }
+    .sim-status::before { width: 8px; height: 8px; border-radius: 50%; background: currentColor; content: ''; animation: pulse 1.5s infinite; }
+    .sim-status.paused { color: var(--muted); }
+    .water-scene { position: relative; min-height: 500px; overflow: hidden; background: linear-gradient(#bcecf5 0 60%, #72cbe0 60% 65%, #1a7fbd 65% 100%); }
+    .sun { position: absolute; top: 30px; right: 9%; width: 68px; height: 68px; border-radius: 50%; background: var(--yellow); box-shadow: 0 0 0 12px rgba(255,210,76,.14), 0 0 45px rgba(255,210,76,.7); }
+    .mountain { position: absolute; bottom: 35%; width: 0; height: 0; border-right: 170px solid transparent; border-bottom: 185px solid #739ab3; border-left: 170px solid transparent; opacity: .8; }
+    .mountain::after { position: absolute; top: 65px; left: -30px; width: 0; height: 0; border-right: 80px solid transparent; border-bottom: 85px solid #9bc1ce; border-left: 80px solid transparent; content: ''; }
+    .mountain.one { left: 0; transform: scale(1.2); }
+    .mountain.two { right: -25px; transform: scale(.92); border-bottom-color: #638da9; }
+    .snowcap { position: absolute; top: 62px; left: -39px; width: 0; height: 0; border-right: 39px solid transparent; border-bottom: 47px solid rgba(255,255,255,.72); border-left: 39px solid transparent; }
+    .cloud { position: absolute; z-index: 2; width: 125px; height: 37px; border-radius: 50px; background: rgba(255,255,255,.93); filter: drop-shadow(0 5px 5px rgba(55,123,157,.1)); }
+    .cloud::before, .cloud::after { position: absolute; border-radius: 50%; background: inherit; content: ''; }
+    .cloud::before { top: -22px; left: 24px; width: 54px; height: 54px; }
+    .cloud::after { top: -15px; left: 65px; width: 44px; height: 44px; }
+    .cloud.one { top: 22%; left: 13%; animation: drift 16s ease-in-out infinite alternate; }
+    .cloud.two { top: 14%; right: 20%; transform: scale(.75); opacity: .85; animation: drift 20s 2s ease-in-out infinite alternate-reverse; }
+    .rain { position: absolute; z-index: 3; top: 26%; left: 17%; width: 110px; height: 0; }
+    .drop { position: absolute; width: 3px; height: 15px; border-radius: 3px; background: #4aafdb; opacity: 0; transform: rotate(16deg); animation: rain 1.2s linear infinite; }
+    .drop:nth-child(1) { left: 10px; animation-delay: .1s; }.drop:nth-child(2) { left: 29px; animation-delay: .6s; }.drop:nth-child(3) { left: 51px; animation-delay: .3s; }.drop:nth-child(4) { left: 72px; animation-delay: .9s; }.drop:nth-child(5) { left: 91px; animation-delay: .45s; }
+    .river { position: absolute; z-index: 1; bottom: 0; left: 39%; width: 26%; height: 38%; background: #2a9bd1; clip-path: polygon(32% 0, 78% 0, 100% 100%, 0 100%); opacity: .9; }
+    .wave { position: absolute; z-index: 4; bottom: 12%; left: 5%; width: 90%; height: 17px; border-top: 3px solid rgba(255,255,255,.5); border-radius: 50%; opacity: .6; }
+    .wave.two { bottom: 20%; width: 70%; left: 20%; opacity: .3; }
+    .evaporation { position: absolute; z-index: 3; bottom: 20%; left: 48%; width: 100px; height: 130px; }
+    .steam { position: absolute; bottom: 0; width: 3px; height: 57px; border-radius: 50%; background: rgba(255,255,255,.55); filter: blur(1px); animation: steam 2.8s ease-in-out infinite; }
+    .steam:nth-child(1) { left: 25px; animation-delay: .3s; }.steam:nth-child(2) { left: 48px; animation-delay: 1s; }.steam:nth-child(3) { left: 70px; animation-delay: 1.6s; }
+    .forest { position: absolute; z-index: 2; bottom: 13%; left: 5%; font-size: 32px; letter-spacing: -12px; filter: saturate(.8); }
+    .forest.right { right: 3%; left: auto; transform: scale(.78); }
+    .station { position: absolute; z-index: 5; display: inline-flex; align-items: center; gap: 7px; padding: 7px 10px; border: 1px solid rgba(255,255,255,.65); border-radius: 20px; color: var(--navy); background: rgba(255,255,255,.9); font-size: 11px; font-weight: 700; box-shadow: 0 3px 8px rgba(15,67,105,.12); transition: transform .2s, background .2s; }
+    .station:hover, .station.active { transform: translateY(-3px); background: var(--yellow); }
+    .station.evaporacion { bottom: 26%; left: 42%; }.station.condensacion { top: 8%; right: 29%; }.station.precipitacion { top: 39%; left: 9%; }.station.acumulacion { right: 9%; bottom: 18%; }
+    .station-icon { display: grid; width: 20px; height: 20px; place-items: center; border-radius: 50%; color: var(--white); background: var(--blue); font-size: 11px; }
+    .simulation-info { min-height: 88px; padding: 17px 23px; color: var(--ink); background: #f7fbfd; border-top: 1px solid #e8f0f5; }
+    .simulation-info strong { display: block; margin-bottom: 3px; color: var(--blue); font: 600 15px 'Space Grotesk', sans-serif; }
+    .simulation-info p { margin: 0; color: var(--muted); font-size: 13px; }
+    .simulation-controls { display: flex; align-items: center; gap: 8px; padding: 14px 23px; border-top: 1px solid #e8f0f5; }
+    .control-button { display: inline-flex; align-items: center; gap: 8px; padding: 7px 11px; border: 1px solid #cbdce8; border-radius: 5px; color: var(--blue); background: var(--white); font-size: 11px; font-weight: 700; }
+    .control-button:hover { border-color: var(--blue); background: #f1f8fc; }
+    .speed-label { margin-left: auto; color: var(--muted); font-size: 11px; }
+    input[type="range"] { width: 85px; accent-color: var(--blue); }
+    .quiz-panel { padding: 25px; }
+    .quiz-heading { display: flex; justify-content: space-between; gap: 12px; align-items: start; margin-bottom: 22px; }
+    .quiz-heading h2 { margin: 0; font-size: 23px; }.quiz-heading p { margin: 5px 0 0; color: var(--muted); font-size: 12px; }
+    .score-box { min-width: 73px; padding: 8px; color: var(--navy); background: var(--yellow); text-align: center; border-radius: 6px; }.score-box span { display: block; font: 700 22px 'Space Grotesk', sans-serif; }.score-box small { font-size: 9px; font-weight: 700; text-transform: uppercase; }
+    .progress-track { height: 5px; margin-bottom: 25px; overflow: hidden; background: #e6eff5; border-radius: 5px; }.progress-value { width: 0; height: 100%; background: var(--cyan); transition: width .3s; }
+    .question-number { margin-bottom: 7px; color: var(--blue); font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }.question-text { min-height: 52px; margin-bottom: 19px; font: 600 20px/1.2 'Space Grotesk', sans-serif; }
+    .answers { display: grid; gap: 9px; }.answer { width: 100%; padding: 12px 13px; color: var(--ink); border: 1px solid #d7e4ec; border-radius: 6px; background: var(--white); text-align: left; font-size: 13px; transition: border .2s, background .2s, transform .2s; }.answer:hover { border-color: var(--blue); transform: translateX(3px); }.answer.correct { color: #146945; border-color: #78d1a9; background: #eafaf2; }.answer.wrong { color: #a94440; border-color: #f0aaa6; background: #fff0ef; }.answer:disabled { cursor: default; transform: none; }.feedback { min-height: 39px; margin: 16px 0 0; font-size: 12px; }.feedback.correct { color: #198153; }.feedback.wrong { color: #bf514b; }.next-question, .restart-quiz { display: none; width: 100%; padding: 12px; border: 0; border-radius: 6px; color: var(--navy); background: var(--yellow); font-size: 12px; font-weight: 700; }.next-question.show, .restart-quiz.show { display: block; }.quiz-result { display: none; padding: 18px; background: #f4fbfd; text-align: center; }.quiz-result.show { display: block; }.quiz-result strong { display: block; margin-bottom: 5px; font: 600 23px 'Space Grotesk', sans-serif; }.quiz-result p { margin: 0 0 15px; color: var(--muted); font-size: 13px; }
+    .learning-note { display: grid; grid-template-columns: auto 1fr; gap: 15px; align-items: center; margin-top: 25px; padding: 18px; color: var(--navy); background: var(--sky); border-left: 4px solid var(--yellow); }.learning-note strong { font: 600 15px 'Space Grotesk', sans-serif; }.learning-note p { margin: 3px 0 0; color: #3d647a; font-size: 12px; }.note-icon { font-size: 27px; }
+    @keyframes pulse { 50% { opacity: .35; } } @keyframes drift { to { transform: translateX(28px); } } @keyframes rain { 0% { opacity: 0; transform: translateY(0) rotate(16deg); } 25% { opacity: 1; } 100% { opacity: 0; transform: translateY(100px) rotate(16deg); } } @keyframes steam { 0% { opacity: 0; transform: translate(0, 0) scaleY(.6); } 35% { opacity: .7; } 100% { opacity: 0; transform: translate(-20px, -75px) scaleY(1); } }
+    @media (min-width: 780px) { .simulation-layout { grid-template-columns: 1.35fr .75fr; }.water-scene { min-height: 555px; }.lab-hero { padding: 76px 0 91px; }.quiz-panel { position: sticky; top: 20px; } }
+    @media (max-width: 560px) { .container { width: min(100% - 28px, 1120px); }.header-inner { min-height: 67px; }.back-link { font-size: 0; }.back-link span { font-size: 19px; }.water-scene { min-height: 440px; }.station { font-size: 9px; padding: 5px 7px; }.station.evaporacion { left: 34%; }.station.condensacion { right: 10%; }.station.acumulacion { right: 4%; }.station.precipitacion { left: 4%; }.cloud.one { left: 4%; }.panel-heading { padding: 19px; }.sim-status { font-size: 0; }.sim-status::before { width: 9px; height: 9px; }.simulation-controls { padding: 13px 19px; }.speed-label { font-size: 0; }.speed-label::before { content: 'Velocidad'; font-size: 10px; }.quiz-panel { padding: 19px; } }
+  </style>
+</head>
+<body>
+  <header class="lab-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html" aria-label="Volver a Primero de Abril"><span class="brand-mark">1<small>°</small></span><span><strong>Primero de Abril</strong><span>Laboratorio de aprendizaje</span></span></a>
+      <a class="back-link" href="index.html"><span aria-hidden="true">←</span> Volver al sitio</a>
+    </div>
+  </header>
+  <section class="lab-hero">
+    <div class="container hero-content">
+      <p class="eyebrow">Explora · Observa · Comprueba</p>
+      <h1>El agua nunca se detiene:<br><em>descubre su ciclo.</em></h1>
+      <p>Activa la simulación, visita cada estación y demuestra lo que aprendiste en el desafío final.</p>
+    </div>
+  </section>
+  <main>
+    <div class="container simulation-layout">
+      <section class="panel simulation-panel" aria-labelledby="sim-title">
+        <div class="panel-heading"><div><h2 id="sim-title">Simulación del ciclo del agua</h2><p>Haz clic en cada etapa para investigar</p></div><span class="sim-status" id="sim-status">En movimiento</span></div>
+        <div class="water-scene" id="water-scene">
+          <div class="sun" aria-hidden="true"></div><div class="mountain one"><span class="snowcap"></span></div><div class="mountain two"></div>
+          <div class="cloud one" aria-hidden="true"></div><div class="cloud two" aria-hidden="true"></div>
+          <div class="rain" aria-hidden="true"><i class="drop"></i><i class="drop"></i><i class="drop"></i><i class="drop"></i><i class="drop"></i></div>
+          <div class="river" aria-hidden="true"></div><div class="wave" aria-hidden="true"></div><div class="wave two" aria-hidden="true"></div><div class="evaporation" aria-hidden="true"><i class="steam"></i><i class="steam"></i><i class="steam"></i></div><div class="forest" aria-hidden="true">🌲🌲🌲</div><div class="forest right" aria-hidden="true">🌲🌲🌲</div>
+          <button class="station evaporacion" data-stage="evaporacion"><span class="station-icon">↑</span> Evaporación</button>
+          <button class="station condensacion" data-stage="condensacion"><span class="station-icon">☁</span> Condensación</button>
+          <button class="station precipitacion" data-stage="precipitacion"><span class="station-icon">↓</span> Precipitación</button>
+          <button class="station acumulacion" data-stage="acumulacion"><span class="station-icon">≈</span> Acumulación</button>
+        </div>
+        <div class="simulation-info" id="simulation-info"><strong>Empieza por cualquier etapa</strong><p>Elige una de las estaciones para ver qué sucede con el agua.</p></div>
+        <div class="simulation-controls"><button class="control-button" id="play-toggle" type="button"><span aria-hidden="true">Ⅱ</span> Pausar</button><button class="control-button" id="reset-sim" type="button"><span aria-hidden="true">↻</span> Reiniciar</button><span class="speed-label">Velocidad</span><input id="speed-control" type="range" min="0.5" max="2" value="1" step="0.5" aria-label="Velocidad de animación"></div>
+      </section>
+      <aside class="panel quiz-panel" aria-labelledby="quiz-title">
+        <div class="quiz-heading"><div><h2 id="quiz-title">Desafío del agua</h2><p>¿Cuánto has descubierto?</p></div><div class="score-box"><span id="score">0</span><small>puntos</small></div></div>
+        <div class="progress-track"><div class="progress-value" id="progress-value"></div></div>
+        <div id="quiz-content"><div class="question-number" id="question-number">Pregunta 1 de 5</div><div class="question-text" id="question-text"></div><div class="answers" id="answers"></div><p class="feedback" id="feedback" role="status" aria-live="polite"></p><button class="next-question" id="next-question" type="button">Siguiente pregunta <span aria-hidden="true">→</span></button></div>
+        <div class="quiz-result" id="quiz-result"><strong id="result-title">¡Reto completado!</strong><p id="result-text"></p><button class="restart-quiz" id="restart-quiz" type="button">Jugar de nuevo</button></div>
+      </aside>
+    </div>
+    <div class="container"><div class="learning-note"><span class="note-icon" aria-hidden="true">💧</span><div><strong>Una idea para recordar</strong><p>El agua cambia de estado y de lugar, pero la cantidad total del planeta se mantiene casi siempre igual.</p></div></div></div>
+  </main>
+  <script>
+    const stages = {
+      evaporacion: { title: '1. Evaporación', text: 'El calor del sol convierte el agua líquida de ríos, lagos y mares en vapor que asciende.' },
+      condensacion: { title: '2. Condensación', text: 'Al subir y enfriarse, el vapor se reúne en pequeñas gotas que forman las nubes.' },
+      precipitacion: { title: '3. Precipitación', text: 'Cuando las gotas de las nubes crecen y pesan, caen a la Tierra como lluvia, nieve o granizo.' },
+      acumulacion: { title: '4. Acumulación', text: 'El agua vuelve a ríos, lagos, océanos, glaciares y al suelo. Luego el ciclo comienza otra vez.' }
+    };
+    const stationButtons = document.querySelectorAll('.station');
+    const infoTitle = document.querySelector('#simulation-info strong');
+    const infoText = document.querySelector('#simulation-info p');
+    stationButtons.forEach((button) => button.addEventListener('click', () => {
+      stationButtons.forEach((item) => item.classList.remove('active'));
+      button.classList.add('active');
+      infoTitle.textContent = stages[button.dataset.stage].title;
+      infoText.textContent = stages[button.dataset.stage].text;
+    }));
+
+    const scene = document.querySelector('#water-scene');
+    const playToggle = document.querySelector('#play-toggle');
+    const simStatus = document.querySelector('#sim-status');
+    const speedControl = document.querySelector('#speed-control');
+    let isPlaying = true;
+    playToggle.addEventListener('click', () => {
+      isPlaying = !isPlaying;
+      scene.classList.toggle('paused', !isPlaying);
+      document.querySelectorAll('.water-scene *').forEach((element) => { element.style.animationPlayState = isPlaying ? 'running' : 'paused'; });
+      playToggle.innerHTML = isPlaying ? '<span aria-hidden="true">Ⅱ</span> Pausar' : '<span aria-hidden="true">▶</span> Continuar';
+      simStatus.textContent = isPlaying ? 'En movimiento' : 'En pausa';
+      simStatus.classList.toggle('paused', !isPlaying);
+    });
+    document.querySelector('#reset-sim').addEventListener('click', () => {
+      stationButtons.forEach((item) => item.classList.remove('active'));
+      infoTitle.textContent = 'Empieza por cualquier etapa'; infoText.textContent = 'Elige una de las estaciones para ver qué sucede con el agua.';
+      isPlaying = true; scene.classList.remove('paused'); simStatus.textContent = 'En movimiento'; simStatus.classList.remove('paused'); playToggle.innerHTML = '<span aria-hidden="true">Ⅱ</span> Pausar';
+      document.querySelectorAll('.water-scene *').forEach((element) => { element.style.animationPlayState = 'running'; });
+    });
+    speedControl.addEventListener('input', () => { scene.style.setProperty('--speed', `${speedControl.value}s`); document.querySelectorAll('.drop, .steam, .cloud').forEach((element) => { element.style.animationDuration = `${1.2 / speedControl.value}s`; }); });
+
+    const questions = [
+      { question: '¿Qué energía inicia principalmente la evaporación?', answers: ['La luz de la luna', 'El calor del sol', 'El viento frío'], correct: 1, hint: 'El sol aporta el calor que transforma el agua líquida en vapor.' },
+      { question: '¿Qué ocurre durante la condensación?', answers: ['El vapor se convierte en pequeñas gotas', 'El agua desaparece', 'La lluvia se congela siempre'], correct: 0, hint: 'Al enfriarse, el vapor se reúne y forma las nubes.' },
+      { question: '¿Cuál es un ejemplo de precipitación?', answers: ['La evaporación', 'La formación de nubes', 'La lluvia'], correct: 2, hint: 'La precipitación es el agua que cae desde las nubes.' },
+      { question: '¿Dónde puede acumularse el agua?', answers: ['Solo en las nubes', 'En ríos, lagos y océanos', 'Únicamente en las plantas'], correct: 1, hint: 'El agua se reúne en distintas reservas de la superficie y del subsuelo.' },
+      { question: '¿Por qué decimos que el ciclo del agua es continuo?', answers: ['Porque sus etapas se repiten', 'Porque nunca cambia de estado', 'Porque solo sucede en verano'], correct: 0, hint: 'El agua circula y vuelve a comenzar el proceso una y otra vez.' }
+    ];
+    let currentQuestion = 0; let score = 0; let answered = false;
+    const questionNumber = document.querySelector('#question-number'); const questionText = document.querySelector('#question-text'); const answers = document.querySelector('#answers'); const feedback = document.querySelector('#feedback'); const nextQuestion = document.querySelector('#next-question'); const progress = document.querySelector('#progress-value'); const scoreElement = document.querySelector('#score'); const quizContent = document.querySelector('#quiz-content'); const quizResult = document.querySelector('#quiz-result'); const resultTitle = document.querySelector('#result-title'); const resultText = document.querySelector('#result-text');
+    function renderQuestion() { const item = questions[currentQuestion]; answered = false; questionNumber.textContent = `Pregunta ${currentQuestion + 1} de ${questions.length}`; questionText.textContent = item.question; progress.style.width = `${(currentQuestion / questions.length) * 100}%`; feedback.textContent = ''; feedback.className = 'feedback'; nextQuestion.classList.remove('show'); answers.innerHTML = ''; item.answers.forEach((answer, index) => { const button = document.createElement('button'); button.className = 'answer'; button.type = 'button'; button.textContent = answer; button.addEventListener('click', () => chooseAnswer(index, button)); answers.appendChild(button); }); }
+    function chooseAnswer(index, selected) { if (answered) return; answered = true; const item = questions[currentQuestion]; document.querySelectorAll('.answer').forEach((button, buttonIndex) => { button.disabled = true; if (buttonIndex === item.correct) button.classList.add('correct'); }); if (index === item.correct) { score += 100; scoreElement.textContent = score; feedback.textContent = '¡Muy bien! +100 puntos. ' + item.hint; feedback.classList.add('correct'); } else { selected.classList.add('wrong'); feedback.textContent = 'Casi. ' + item.hint; feedback.classList.add('wrong'); } progress.style.width = `${((currentQuestion + 1) / questions.length) * 100}%`; nextQuestion.classList.add('show'); }
+    nextQuestion.addEventListener('click', () => { currentQuestion += 1; if (currentQuestion < questions.length) renderQuestion(); else showResult(); });
+    function showResult() { quizContent.style.display = 'none'; quizResult.classList.add('show'); resultTitle.textContent = score === 500 ? '¡Maestría del agua!' : score >= 300 ? '¡Buen trabajo!' : '¡Sigue explorando!'; resultText.textContent = `Conseguiste ${score} de 500 puntos. Cada intento es una nueva oportunidad para aprender.`; document.querySelector('#restart-quiz').classList.add('show'); }
+    document.querySelector('#restart-quiz').addEventListener('click', () => { currentQuestion = 0; score = 0; scoreElement.textContent = '0'; quizContent.style.display = ''; quizResult.classList.remove('show'); renderQuestion(); });
+    renderQuestion();
+  </script>
+</body>
+</html>
